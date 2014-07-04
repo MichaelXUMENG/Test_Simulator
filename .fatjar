@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Wed Jul 02 17:10:28 CDT 2014
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=true
+jarname=Simulator.jar
+manifest.mergeall=true
+manifest.mainclass=MainFrame
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=

@@ -15,13 +15,13 @@ import javax.swing.table.DefaultTableModel;
 
 public class reviewPanel  extends JFrame implements MouseListener{
 	
-	private Object[] title = {"Question#", "Right / Wrong"};
+	private Object[] title = {"Question#", "Right / Wrong", "Important"};
 	private Object[][] data = {};
 	private DefaultTableModel tableModel;
 	private JTable reviewTable;
 	private startTest question;
 	
-	public reviewPanel(char[] yourAnswer, excel book, int rowNumber, startTest father){
+	public reviewPanel(char[] yourAnswer, excel book, int rowNumber, startTest father, char[] importantQ){
 		
 		int i;
 		this.pack();
@@ -51,20 +51,38 @@ public class reviewPanel  extends JFrame implements MouseListener{
 		
 		for(i=1;i< rowNumber;i++){
 			if(book.getCurrectAnswer(i).equals(Character.toString(yourAnswer[i]))){
-				String[] rowValue = {"Question "+i, "RIGHT"};
-				tableModel.addRow(rowValue);
-			}
-			else{
-				if(yourAnswer[i] == 0){
-					String[] rowValue = {"Question "+i, " "};
+				if(importantQ[i] == 'T'){
+					String[] rowValue = {"Question "+i, "RIGHT", "Check"};
 					tableModel.addRow(rowValue);
 				}
 				else{
-					String[] rowValue = {"Question "+i, "WRONG"};
+					String[] rowValue = {"Question "+i, "RIGHT"};
 					tableModel.addRow(rowValue);
 				}
+			}
+			else{
+				if(yourAnswer[i] == 0){
+					if(importantQ[i] == 'T'){
+						String[] rowValue = {"Question "+i, " ", "Check"};
+						tableModel.addRow(rowValue);
+					}	
+					else{
+						String[] rowValue = {"Question "+i, ""};
+						tableModel.addRow(rowValue);
+					}
+				}
+				else{
+					if(importantQ[i] == 'T'){
+						String[] rowValue = {"Question "+i, "WRONG", "Check"};
+						tableModel.addRow(rowValue);
+					}
+					else{
+						String[] rowValue = {"Question "+i, "WRONG"};
+						tableModel.addRow(rowValue);
+					}
+				}
 				
-			} 
+			}
 		
 		}
 		reviewTable.addMouseListener(this);

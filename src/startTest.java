@@ -37,7 +37,7 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 	ButtonGroup answerGroup;
 	textArea areaA, areaB, areaC, areaD, areaE, areaF;
 
-	JCheckBox showAnswer;
+	JCheckBox showAnswer, important;
 	
 	String fileName;
 	String saveFile;
@@ -57,6 +57,7 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 	
 	
 	char[] tempAnswer;
+	char[] importantQuestion;
 	
 	
 	
@@ -82,11 +83,9 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
  * This part is for the buttons
  * ******************************************************************/
 		JPanel controlPanel = new JPanel();
-		controlPanel.setLayout(new GridLayout(1,3,80,0));
-		showAnswer = new JCheckBox("Show Answer", false);
+		controlPanel.setLayout(new GridLayout(1,2,80,0));
 		controlPanel.add(previous);
 		controlPanel.add(next);
-		controlPanel.add(showAnswer);
 		
 		previous.setEnabled(false);
 		next.setEnabled(false);
@@ -94,7 +93,6 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		
 		previous.addMouseListener(this);
 		next.addMouseListener(this);
-		showAnswer.addActionListener(this);
 		
 		
 		JPanel functionPanel = new JPanel();
@@ -145,12 +143,20 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		checkE.add(buttonE = new JRadioButton("E"), BorderLayout.WEST);
 		checkE.add(areaE = new textArea(), BorderLayout.CENTER);
 		
+		//This panel is for the check boxes and answer showing
 		JPanel checkF = new JPanel();
-		checkF.setLayout(new BorderLayout(5,0));
-		checkF.add(buttonF = new JRadioButton("F"), BorderLayout.WEST);
+		checkF.setLayout(new GridLayout(1,3));
 		areaF = new textArea();
 		areaF.setNewSize(10, 10);
-		checkF.add(areaF , BorderLayout.CENTER);
+		checkF.add(areaF);
+		
+		showAnswer = new JCheckBox("Show Answer", false);
+		showAnswer.addActionListener(this);
+		checkF.add(showAnswer);
+		
+		important = new JCheckBox("Important", false);
+		important.addActionListener(this);
+		checkF.add(important);
 		
 		/*add these 6 small parts into the answerPanel*/
 		JPanel answerPanel = new JPanel();
@@ -177,7 +183,7 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		buttonC.addActionListener(this);
 		buttonD.addActionListener(this);
 		buttonE.addActionListener(this);
-		buttonF.addActionListener(this);
+//		buttonF.addActionListener(this);
 		buttonV.addActionListener(this);
 		
 		buttonA.addMouseListener(this);
@@ -185,7 +191,7 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		buttonC.addMouseListener(this);
 		buttonD.addMouseListener(this);
 		buttonE.addMouseListener(this);
-		buttonF.addMouseListener(this);
+//		buttonF.addMouseListener(this);
 		
 		
 /******************************************************
@@ -277,10 +283,12 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 				try{
 					/*show the question and answer in the text area*/
 					Question.openExcel(fileName);  
-					questionPanel.setTextArea("QUESTION "+row+" / "+rowNumber+":    "+Question.readCellContent(1, row));
+					questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
 					areaF.setTextArea("");
 
 					this.setAnswerFiledFilled(row);
+					this.showImportant();
+
 			       }   catch (Exception ex)   {    
 			           System.out.println(ex);    
 			       }  
@@ -305,22 +313,31 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 			
 			row+=1;	
 			buttonV.setSelected(true);
-			try{  
-				Question.openExcel(fileName);  
-				questionPanel.setTextArea("QUESTION "+row+" / "+rowNumber+":    "+Question.readCellContent(1, row));
-				areaF.setTextArea("");
-
-				this.setAnswerFiledFilled(row);
-
-		       
-			}   catch (Exception ex){       
-				System.out.println(ex);   
-			}  
+			if(row>(rowNumber-1)){
+				questionPanel.setTextArea("There is Last ONE!!\nPlease click PREVIOUS to continue!");
+				this.setTextFiledBlank();
+				row = rowNumber;
+			}
 			
-			/*show your Answers on the radio button*/
+			else{
+				try{  
+					Question.openExcel(fileName);  
+					questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
+					areaF.setTextArea("");
 
-			yours = tempAnswer[row];
-			this.setRadioButtonSelected(yours);
+					this.setAnswerFiledFilled(row);
+					this.showImportant();
+
+			       
+				}   catch (Exception ex){       
+					System.out.println(ex);   
+				}  
+				
+				/*show your Answers on the radio button*/
+
+				yours = tempAnswer[row];
+				this.setRadioButtonSelected(yours);
+			}
 			
 		}
 		
@@ -345,10 +362,12 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 				
 				Question.openExcel(fileName);  
 				rowNumber = Question.getQuestionNumber();
-				questionPanel.setTextArea("QUESTION "+row+" / "+rowNumber+":    "+Question.readCellContent(1, row));
+				questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
 				tempAnswer = new char[rowNumber];
+				importantQuestion = new char[rowNumber];
 				this.setTextFiledBlank();
 				this.setAnswerFiledFilled(row);
+				this.showImportant();
 
 			
 			}catch (Exception ex){    
@@ -365,7 +384,7 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		/*Show the reviews*/
 		if(e.getSource() == review){
 //			char[] currectAnswer = Question.getCurrectAnswer();
-			new reviewPanel(tempAnswer, Question, rowNumber, this);
+			new reviewPanel(tempAnswer, Question, rowNumber, this, importantQuestion);
 		}
 		
 /***********************************************************************************************************************/
@@ -480,6 +499,15 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 				areaF.setTextArea("");
 			}
 		}
+		
+		if(e.getSource() == important){
+			if(important.isSelected()){
+				importantQuestion[row] = 'T';
+			}
+			else{
+				importantQuestion[row] = 0;
+			}
+		}
 	}
 
 	
@@ -506,7 +534,7 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		
 		if(saveFile != null){
 			//saveFile is the path of AnswerBook, and fileName is the path of the Question
-			int error = Answer.openWritableExcel(saveFile, date, tempAnswer.length, tempAnswer, fileName);
+			int error = Answer.openWritableExcel(saveFile, date, tempAnswer.length, tempAnswer,importantQuestion, fileName);
 			if(error == 1){
 				JOptionPane.showMessageDialog(null, "Your Answer has been Saved Successfully!!", "Message Dialog", JOptionPane.INFORMATION_MESSAGE);
 				saveChange = true;
@@ -529,11 +557,11 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		buttonV.setSelected(true);
 		try{  
 			Question.openExcel(fileName);  
-			questionPanel.setTextArea("QUESTION "+row+":    "+Question.readCellContent(1, row));
+			questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
 			areaF.setTextArea("");
 
 			this.setAnswerFiledFilled(row);
-
+			this.showImportant();
 	       
 		}   catch (Exception ex){       
 			System.out.println(ex);   
@@ -596,6 +624,12 @@ public class startTest extends JFrame implements ActionListener, ListSelectionLi
 		
 	}
 	/**********************************************************************/
+	public void showImportant(){
+		important.setSelected(false);
+		if(importantQuestion[row] == 'T'){
+			important.setSelected(true);
+		}
+	}
 	/**********************************************************************/
 
 	

@@ -12,7 +12,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	//create four functional buttons
 		private JButton start = new JButton("Start");
 		private JButton review = new JButton("Review");
-		private JButton showGrade = new JButton("Show Grades");
+		private JButton important = new JButton("Important Questions");
 		private JButton showAttempts = new JButton("Show Attemps");
 		private JButton quit = new JButton("QUIT");		
 		
@@ -28,7 +28,7 @@ public class MainFrame extends JFrame implements ActionListener{
 			LButton.setLayout(new GridLayout(5,1));
 			LButton.add(start);
 			LButton.add(review);
-			LButton.add(showGrade);
+			LButton.add(important);
 			LButton.add(showAttempts);
 			LButton.add(quit);
 			
@@ -37,16 +37,16 @@ public class MainFrame extends JFrame implements ActionListener{
 			getContentPane().add(LButton, BorderLayout.CENTER);
 			
 			//add tool tips text for the buttons
-			start.setToolTipText("You can add a new course, Or modify an existed course, Or delete a corse");
-			review.setToolTipText("You can add a new student for a particular class, Or delete a student for whole classes or one particular class");
-			showGrade.setToolTipText("Record attendance on a specific day for a particular course");
+			start.setToolTipText("Start a new test with the data of the chapter you choose");
+			review.setToolTipText("Review a chapter that you have done with choosing the Answer you saved");
+			important.setToolTipText("Show the important Questions which you noted by choosing the Answer sheet");
 			showAttempts.setToolTipText("You can choose to show detail record of a course or a line graph");
 			quit.setToolTipText("Quit the System");
 			
 			//register the listener to the buttons
 			start.addActionListener(this);
 			review.addActionListener(this);
-			showGrade.addActionListener(this);
+			important.addActionListener(this);
 			showAttempts.addActionListener(this);
 			quit.addActionListener(this);
 			
@@ -98,13 +98,13 @@ public class MainFrame extends JFrame implements ActionListener{
 			}
 			
 			//action of button checkIn
-			if(e.getSource()==showGrade){
-/*				try {
-					new record();
+			if(e.getSource()==important){
+				try {
+					new showImportantQuestions();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}    */
+				}    
 				
 			}
 			

@@ -76,7 +76,7 @@ public class excel {
 
 	
 /***************************************************************************************************/
-	public int openWritableExcel(String fileName,String date, int row, char[] data, String dataFile){
+	public int openWritableExcel(String fileName,String date, int row, char[] data,char[] importantQ, String dataFile){
 		int error = 0;
 		
 		try {
@@ -91,6 +91,8 @@ public class excel {
 			for(i=0; i<row; i++){
 //				cell = Character.toString(data[i]);
 				yourCell = new Label(1, i,Character.toString(data[i]));
+				wSheet.addCell(yourCell);
+				yourCell = new Label(2, i,Character.toString(importantQ[i]));
 				wSheet.addCell(yourCell);
 			}
 			wBook.write();
@@ -110,7 +112,7 @@ public class excel {
 	}
 	
 
-	public int reviewWritableExcel(String fileName,String date, int row, char[] data, String dataFile){
+	public int reviewWritableExcel(String fileName,String date, int row, char[] data,char[] importantQ, String dataFile){
 		int error = 0;
 
 		try {
@@ -125,6 +127,8 @@ public class excel {
 			for(i=0; i<row; i++){
 //				cell = Character.toString(data[i]);
 				yourCell = new Label(1, i,Character.toString(data[i]));
+				wSheet.addCell(yourCell);
+				yourCell = new Label(2, i,Character.toString(importantQ[i]));
 				wSheet.addCell(yourCell);
 			}
 			wBook.write();
@@ -157,6 +161,13 @@ public class excel {
 		char result = answer.charAt(0);
 		return result;
 		
+	}
+	
+	public char getImportant(int row){
+		cell = sheet.getCell(2, row);
+		String answer= cell.getContents();
+		char result = answer.charAt(0);
+		return result;
 	}
 	
 

@@ -1,66 +1,29 @@
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 
-public class review extends startTest implements MouseListener{
+public class showImportantQuestions extends review implements MouseListener{
 
-	String questionFile;
-	
-	public review() throws IOException {
-		super();
+	private Boolean contain;
+	public showImportantQuestions() throws IOException{
 		// TODO Auto-generated constructor stub
+		super();
+		contain = false;
 		
-		questionPanel.setTextArea("Hello!\nWelcome to the Text Simulator from MENG!\n"+
-				"Please click SELECT to choose Your Answer!\n\n\n"+
-				"Please Note that you have to choose the file which contains your answer from the past time!!!");	
 	}
-	
-	public void setRowValue(int newRow){
-		row = newRow;
-		buttonV.setSelected(true);
-		try{  
-			Question.openExcel(questionFile);  
-			questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
-			areaF.setTextArea("");
-			this.setAnswerFiledFilled(row); 
-		}   catch (Exception ex){       
-			System.out.println(ex);   
-		}  
-		
-		yours = tempAnswer[row];
-		this.setRadioButtonSelected(yours);
-		this.showImportant();
-
-
-		if(!Question.readCellContent(7, row).equals(Character.toString(yours))){
-			if(yours == 0){
-				questionPanel.setTextColor(Color.BLACK);
-			}
-			else{
-				questionPanel.setTextColor(Color.RED);
-			}
-		}
-		else{
-			questionPanel.setTextColor(Color.BLACK);
-		}
-		
-	} 
-	
 	
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 /***********************************************************************************************************************/
 		/*Go to the previous question*/
 		if(e.getSource() == previous){
+			int i;
 			/*store your answer into a workbook*/
 /*			String label = Character.toString(yourAnswer);
 			Answer.continueWritableExcel("Chapter 1.xls", 0, label, row);
@@ -73,6 +36,15 @@ public class review extends startTest implements MouseListener{
 			/*clear all the answer area if it is the first question*/
 			row-=1;
 			buttonV.setSelected(true);
+			
+			for(i=row; i>0; i--){
+				if(importantQuestion[i] == 'T'){
+					row = i;
+					contain = true;
+					break;
+				}
+			}
+			
 			if(row<=0){
 				questionPanel.setTextArea("There is FIRST ONE!!\nPlease click NEXT to continue!");
 				this.setTextFiledBlank();
@@ -80,12 +52,38 @@ public class review extends startTest implements MouseListener{
 			}
 			else{
 				try{
-					/*show the question and answer in the text area*/
-					Question.openExcel(questionFile);  
-					questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
-					areaF.setTextArea("");
+					
+					if(contain){
+						/*show the question and answer in the text area*/
+						Question.openExcel(questionFile);  
+						questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
+						areaF.setTextArea("");
 
-					this.setAnswerFiledFilled(row);
+						this.setAnswerFiledFilled(row);
+						
+						yours = tempAnswer[row];
+						this.setRadioButtonSelected(yours);
+						this.showImportant();
+
+						
+						if(!Question.readCellContent(7, row).equals(Character.toString(yours))){
+							if(yours == 0){
+								questionPanel.setTextColor(Color.BLACK);
+							}
+							else{
+								questionPanel.setTextColor(Color.RED);
+							}
+						}
+						else{
+							questionPanel.setTextColor(Color.BLACK);
+						}
+						
+						contain = false;
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "There is no more Important Question!!");
+						row+=1;
+					}
 
 			       }   catch (Exception ex)   {    
 			           System.out.println(ex);    
@@ -95,22 +93,6 @@ public class review extends startTest implements MouseListener{
 				yours = Answer.getAnswer(row);
 				Answer.closeAnswerSheet();
 				*/
-				yours = tempAnswer[row];
-				this.setRadioButtonSelected(yours);
-				this.showImportant();
-
-				
-				if(!Question.readCellContent(7, row).equals(Character.toString(yours))){
-					if(yours == 0){
-						questionPanel.setTextColor(Color.BLACK);
-					}
-					else{
-						questionPanel.setTextColor(Color.RED);
-					}
-				}
-				else{
-					questionPanel.setTextColor(Color.BLACK);
-				}
 			}
 		}
 		
@@ -119,7 +101,7 @@ public class review extends startTest implements MouseListener{
 		/*Go to the next question*/
 		if(e.getSource() == next){
 			saveChange = false;
-			
+			int i;
 /*			String label = Character.toString(yourAnswer);
 			Answer.continueWritableExcel("Chapter 1.xls", 0, label, row);
 */			
@@ -131,6 +113,14 @@ public class review extends startTest implements MouseListener{
 			row+=1;	
 			buttonV.setSelected(true);
 			
+			for(i=row; i<rowNumber; i++){
+				if(importantQuestion[i] == 'T'){
+					row = i;
+					contain = true;
+					break;
+				}
+			}
+			
 			if(row>(rowNumber-1)){
 				questionPanel.setTextArea("There is Last ONE!!\nPlease click PREVIOUS to continue!");
 				this.setTextFiledBlank();
@@ -138,11 +128,36 @@ public class review extends startTest implements MouseListener{
 			}
 			else{
 				try{  
-					Question.openExcel(questionFile);  
-					questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
-					areaF.setTextArea("");
+					if(contain){
+						Question.openExcel(questionFile);  
+						questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
+						areaF.setTextArea("");
 
-					this.setAnswerFiledFilled(row);
+						this.setAnswerFiledFilled(row);
+						
+						yours = tempAnswer[row];
+						this.setRadioButtonSelected(yours);
+						this.showImportant();
+
+						
+						if(!Question.readCellContent(7, row).equals(Character.toString(yours))){
+							if(yours == 0){
+								questionPanel.setTextColor(Color.BLACK);
+							}
+							else{
+								questionPanel.setTextColor(Color.RED);
+							}
+						}
+						else{
+							questionPanel.setTextColor(Color.BLACK);
+						}
+						
+						contain = false;
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "There is no more Important Question!!");
+						row-=1;
+					}
 			       
 				}   catch (Exception ex){       
 					System.out.println(ex);   
@@ -153,22 +168,6 @@ public class review extends startTest implements MouseListener{
 				yours = Answer.getAnswer(row);
 				Answer.closeAnswerSheet();
 				*/
-				yours = tempAnswer[row];
-				this.setRadioButtonSelected(yours);
-				this.showImportant();
-
-				
-				if(!Question.readCellContent(7, row).equals(Character.toString(yours))){
-					if(yours == 0){
-						questionPanel.setTextColor(Color.BLACK);
-					}
-					else{
-						questionPanel.setTextColor(Color.RED);
-					}
-				}
-				else{
-					questionPanel.setTextColor(Color.BLACK);
-				}
 			}
 			
 		}
@@ -200,7 +199,6 @@ public class review extends startTest implements MouseListener{
 				
 				Question.openExcel(questionFile);
 				rowNumber = Question.getQuestionNumber();
-				questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
 				tempAnswer = new char[rowNumber];
 				importantQuestion = new char[rowNumber];
 				for(i=1;i<rowNumber;i++){
@@ -208,36 +206,47 @@ public class review extends startTest implements MouseListener{
 					importantQuestion[i] = Answer.getImportant(i);
 				}
 				
-				this.setTextFiledBlank();
-				
-        
-				this.setAnswerFiledFilled(row);
-
-				
-				yours = tempAnswer[row];
-				this.setRadioButtonSelected(yours);
-				this.showImportant();
-
-				
-				if(!Question.readCellContent(7, row).equals(Character.toString(yours))){
-					if(yours == 0){
-						questionPanel.setTextColor(Color.BLACK);
-					}
-					else{
-						questionPanel.setTextColor(Color.RED);
+				for(i=row; i<rowNumber; i++){
+					if(importantQuestion[i] == 'T'){
+						row = i;
+						contain = true;
+						break;
 					}
 				}
+				
+				if(contain){
+					questionPanel.setTextArea("QUESTION "+row+" / "+(rowNumber-1)+":    "+Question.readCellContent(1, row));
+					this.setTextFiledBlank();				
+					this.setAnswerFiledFilled(row);
+					
+					yours = tempAnswer[row];
+					this.setRadioButtonSelected(yours);
+					this.showImportant();
+					
+					if(!Question.readCellContent(7, row).equals(Character.toString(yours))){
+						if(yours == 0){
+							questionPanel.setTextColor(Color.BLACK);
+						}
+						else{
+							questionPanel.setTextColor(Color.RED);
+						}
+					}
+					else{
+						questionPanel.setTextColor(Color.BLACK);
+					}
+					
+					previous.setEnabled(true);
+					next.setEnabled(true);
+					flag = true;
+					contain = false;
+				}
 				else{
-					questionPanel.setTextColor(Color.BLACK);
+					JOptionPane.showMessageDialog(null, "There is no Important Question!!!");
 				}
 				
 			}catch (Exception ex){    
 				System.out.println(ex);    
 			}     
-			
-			previous.setEnabled(true);
-			next.setEnabled(true);
-			flag = true;
 		}
 
 		
